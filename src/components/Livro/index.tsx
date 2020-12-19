@@ -1,25 +1,30 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
+import { ListaLivrosDTO } from '../../screens/ListaLivros';
 import { ContainerBotao, LivroImage, Titulo, Autor } from './styles';
 
-const Livro = () => {
+interface LivroProps {
+  data: ListaLivrosDTO;
+}
+
+const Livro = (props: LivroProps) => {
   const navigation = useNavigation();
 
   return (
     <ContainerBotao
-      onPress={() => { navigation.navigate('DetalheLivro'); }}
+      onPress={() => {
+        navigation.navigate('DetalheLivro', {
+          livroId: props.data.id,
+        });
+      }}
     >
       <LivroImage
         resizeMode="cover"
-        source={require('../../assets/images/very-nice.jpg')}
+        source={{ uri: props.data.imagem }}
       />
-      <Titulo>
-        Nome do livro
-      </Titulo>
-      <Autor>
-        Nome do autor
-      </Autor>
+      <Titulo>{props.data.nome}</Titulo>
+      <Autor>{props.data.autor}</Autor>
     </ContainerBotao>
   );
 }

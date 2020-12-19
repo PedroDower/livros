@@ -1,11 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Livro from '../../components/Livro';
+import { buscaLivros } from '../../services/Livro';
 import { Container, Header, ContainerRow, TextoHeader, NomeUsuario, BotaoIcone, ListagemLivro } from './styles';
 
+export interface ListaLivrosDTO {
+	id: number;
+	nome: string;
+	autor: string;
+	imagem: string;
+}
+
 const ListaLivros = () => {
-	const [listaDosLivros, setListaDosLivros] = useState([1, 2, 3, 4, 5, 6]);
+	const [listaDosLivros, setListaDosLivros] = useState<ListaLivrosDTO[]>([]);
+
+	useEffect(() => {
+		const carregaLivros = async () => {
+			const resposta = await buscaLivros();
+			const json = await resposta.json();
+			setListaDosLivros(json);
+		}
+
+		carregaLivros();
+	}, []);
 
 	return(
 		<Container>
@@ -29,8 +47,13 @@ const ListaLivros = () => {
 			<ListagemLivro
 				numColumns={2}
 				data={listaDosLivros}
-				renderItem={item => <Livro />}
-				keyExtractor={item => 'item' + item}
+				renderItem={
+					({ item }: { item: ListaLivrosDTO }) =>
+						<Livro data={item} />
+					}
+				keyExtractor={(_, index) => {
+					return 'item' + index;
+				}}
 			/>
 		</Container>
 	);
